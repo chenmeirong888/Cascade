@@ -1,4 +1,4 @@
-# Smartphone-Edge Cascading Earthquake Early Warning (EEW) Pipeline
+# A Cascaded Earthquake Detection and Phase Picking Algorithm for Smartphone-Based Early Warning Systems
 
 This repository contains the open-source Python implementation of the cascading framework for smartphone-based Earthquake Early Warning (EEW) systems, as described in our manuscript.
 The processing pipeline operates on stream telemetrics in three distinct stages:
