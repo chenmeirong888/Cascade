@@ -1,5 +1,0 @@
-origi,year,comp,idx,currenten_fpath,event_label,pre_class,pre_pidx,pre_prob,status
-CHB0012105240409.mseed,2021,Y,727,C:\Users\Administrator\Desktop\test_predic\github\data_input\seismic\C\CHB0012105240409_idx727.txt,1,1,723,0.8813552260398865,processed
-AH_A0009_AH20240918200800_idx6664.mseed,2024,Y,6664,C:\Users\Administrator\Desktop\test_predic\github\data_input\seismic\C\AH_A0009_AH20240918200800_idx6664.txt,1,1,6668,0.9397591948509216,processed
-KSRH042104070144_idx2071.mseed,2021,Y,2071,C:\Users\Administrator\Desktop\test_predic\github\data_input\seismic\C\KSRH042104070144_idx2071.txt,1,0,-1,0.0,processed
-MIE0152105260857_idx1497.mseed,2021,Y,1497,C:\Users\Administrator\Desktop\test_predic\github\data_input\seismic\C\MIE0152105260857_idx1497.txt,1,1,1496,0.9796679615974426,processed

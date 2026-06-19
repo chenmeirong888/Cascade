@@ -1,2 +1,0 @@
-file,event_type,reject_reason,trigger_time_s,trigger_time_idx,p_time_s,p_prob,trigger_to_p_delay_s,event_start_idx,event_end_idx
-shaking_sample.txt,earthquake,None,6.41,641,6.19,0.8316175937652588,-0.22,591,3886
