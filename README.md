@@ -1,56 +1,77 @@
 # A Cascaded Earthquake Detection and Phase Picking Algorithm for Smartphone-Based Early Warning Systems
 
 This repository contains the open-source Python implementation of the cascading framework for smartphone-based Earthquake Early Warning (EEW) systems, as described in our manuscript.
-The processing pipeline operates on stream telemetrics in three distinct stages:
-1. **Front-End**: STA/LTA continuous filtering and initial trigger activation.
-2. **Mid-End**: A 4-Stage Physical Feature Gating layer to filter out non-seismic human operational noise.
-3. **Back-End**: Sliding convolutional neural network (CNN) inference for event classification and precise P-wave phase picking.
+The processing pipeline includes:
+1. **Front-End**: STA/LTA filtering and initial trigger activation.
+2. **Back-End**: Convolutional Neural Network (CNN) inference for event classification and P-wave phase picking.
 
 ---
 
 ## Repository Structure
 
 ```text
-├── data_input/
-│   ├── phone_records/
-│   │   ├── human_noise/             # Daily human noise records (5-column format)
-│   │   └── shaking_table/           # Shaking table benchmark files (3-column pure acceleration matrix)
-│   ├── seismic/                     # Long-term continuous seismic waveforms 
-│   └── earthquake.db                # SQLite3 database containing indexed seismogram metadata
+├── data_samples/ # Demonstration datasets
+│   ├── 1_continuous data/ # Continuous stream records with true P-wave indices (_pidx_ tags)
+│   ├── 2_shaking_table/ # Shaking table benchmark files (3-column pure acceleration matrix)
+│   ├── 3_human_daily/  # Daily human noise records (5-column format)
+│   ├── 4_train_5s/  # 5s-window segments for CNN training
+│   ├── 5_data_20s/ #20s-window seismic segments 
 │
+├── paper_cnn_model/                 #  CRITICAL: Contains the fine-tuned weights used in the paper
+├── train_model/                     # Output directory for trained CNN weights
+├── fine_tune_model/                 # Output directory for trained CNN weights
+├── pred_output/                     # Output directory for evaluation reports
 │
-├── data_output/                     # Output directories for evaluation reports
-│   ├── human_noise/
-│   ├── shaking_table/
-│   └── continuous_eq/
+├── data_slide_20s.py          # Preprocessing: Raw -> 20s segments
+├── slide_5s.py                # Preprocessing: 20s -> 5s training segments
+├── train.py                   # Model training script
+├── finetune.py                # Fine-tuning script with partial layer-freezing
+└── prediction.py              # Real-time stream inference & evaluation
 │
-├── models/
-│       └── fold_0_v4.h5             # Fully fine-tuned pre-trained CNN weights used in the paper
-│
-├── run_prediction.py                # Pipeline execution and evaluation script
-└── train.py                         # Model architecture and training source code
+├── requirements.txt          
+```
 
-Environmental Prerequisites
-Ensure you have Python 3.8+ installed along with the stable computing and software stack
+**Pipeline Workflow**
+1. Data Slide
+- 20s Extraction (data_slide_20s.py): Scans 1_continuous data/ and extracts 20-second seismic clips. It dynamically calculates the true P-wave index relative to the sliding window and embeds this true location into the output .npy filename (e.g., _pidx_850.npy).
+- 5s Segmentation (slide_5s.py): Reads the 20s segments and generates 5-second training arrays stored in data_samples/4_train_5s/EQ/.
 
-Execution & Evaluation
-The workspace configuration can be toggled via the DATA_MODE parameter at the top of prediction.py:
+2. Model Training & Fine-Tuning
+- Run train.py to train the CNN model.
+- The training process automatically reads segments from 4_train_5s/. A dynamic resampling strategy is employed during training to maintain a 1:1 ratio between positive and negative samples per batch, mitigating class imbalance. Output weights are saved into the train_model/ directory.
+- finetune.py implements a domain adaptation strategy by freezing the bottom 60% of convolutional blocks to prevent catastrophic forgetting.
 
-# Open prediction.py and specify the evaluation mode:
-DATA_MODE = 'human_noise'      # For daily human operational noise benchmarks
-# DATA_MODE = 'shaking_table'   # For pure laboratory shaking table benchmarks
-# DATA_MODE = 'continuous_eq'   # For long-term continuous seismogram evaluation via SQLite3
+3. Inference & Evaluation
+The inference pipeline operates on three distinct modes defined by the DATA_MODE variable in prediction.py:
+- 'human_noise': Evaluates precision on daily activity datasets.
+- 'shaking_table': Evaluates performance on laboratory shaking scenarios.
+- 'continuous_eq': Evaluates recall and P-wave picking accuracy on continuous seismic streams.
 
-Run the pipeline using standard execution:
-python prediction.py
 
-Generated Outputs:
-1-Statistical Summaries: Benchmarking summaries (e.g., summary_statistics.csv, Missed_EQ_Diagnostic_Details.csv) are written directly to the corresponding data_output/ directory.
-2-Time-series probability alignment graphs plotting Predicted P-waves (dashed red line) and True P-waves (dashed green line) are exported to disk when plotting parameters are enabled.
+**Environmental Prerequisites**
+- Ensure you have Python 3.8+ installed along with the stable computing and software stack
+- numpy, pandas,scipy, matplotlib,scikit-learn
 
-Dataset Notice
-1. Inference Benchmark: Users can run run_prediction.py directly using the enclosed micro-telemetry data fragments to verify the core logic and workflow described in the manuscript.
-2. Model Training: The full-scale telemetry catalogs and historical continuous seismic waveform databases used for the 5-fold cross-validation are omitted from this repository due to storage limitations. The train.py script is provided as a methodological reference for peer-review audit.
 
-Citation
+**Quick Start**
+
+To run the evaluation pipeline:
+1. Open prediction.py.
+2. Set DATA_MODE to your desired configuration (e.g., 'continuous_eq').
+3. Execute: python prediction.py
+
+
+**Generated Outputs**
+- Evaluation Reports: CSV summaries (e.g., summary_statistics.csv, missed_earthquakes_list.csv) are written directly to the corresponding pred_output/DATA_MODE/ directory.
+- Diagnostic Visualizations: Time-series probability alignment graphs (showing raw/filtered signals, STA/LTA ratios, and P-wave predictions) are exported as PNGs for audit.
+
+
+**Data and Reproducibility Notice**
+1. Inference Reproduction: To reproduce the evaluation metrics and figures reported in the manuscript, simply execute prediction.py. This script defaults to using our final fine-tuned model weights (/paper_cnn_model/fold_0_v4.h5).
+2. Dataset Limitations: Due to file size constraints and ongoing research embargoes on the full-scale continuous seismic telemetry, this repository only includes a representative data subset (data_samples/).
+3. Methodological Reference: The provided processing and training scripts (data_slide_20s.py, train.py, finetune.py) are included to demonstrate the algorithmic workflow. Local training results generated using this limited subset are intended for methodological reference rather than production-level performance.
+
+
+**Citation**
+
 If you find this codebase or our framework useful for your academic research, please consider citing our work.
