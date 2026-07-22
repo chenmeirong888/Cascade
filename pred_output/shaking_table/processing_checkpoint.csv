@@ -1,0 +1,4 @@
+currenten_fpath,idx,year,comp,pre_class,pre_pidx,pre_prob,status,true_pa_1s,true_pa_3s,trig_pa_1s,trig_pa_3s,max_sta_lta
+c:\Users\Administrator\Desktop\Cascade\data_samples\2_shaking_table\Honor 100.txt,,SampleData,UD,1,1543,0.6269466280937195,processed,,,0.52,0.53,5.26
+c:\Users\Administrator\Desktop\Cascade\data_samples\2_shaking_table\Huawei Mate 60 Pro.txt,,SampleData,UD,1,1549,0.5823642015457153,processed,,,0.14,0.14,10.02
+c:\Users\Administrator\Desktop\Cascade\data_samples\2_shaking_table\Oppo A5.txt,,SampleData,UD,0,-1,0.0,processed,,,0.15,0.15,4.05
