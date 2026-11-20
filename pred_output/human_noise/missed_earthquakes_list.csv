@@ -1,4 +1,3 @@
 currenten_fpath,idx,year,comp,pre_class,pre_pidx,pre_prob,status,true_pa_1s,true_pa_3s,trig_pa_1s,trig_pa_3s,max_sta_lta
-c:\Users\Administrator\Desktop\Cascade\data_samples\3_human_daily\2026030702.txt,,SampleData,UD,0,-1,0.0,processed,,,0.37,0.48,1421.89
-c:\Users\Administrator\Desktop\Cascade\data_samples\3_human_daily\2026030705.txt,,SampleData,UD,0,-1,0.0,processed,,,0.05,0.08,2538.92
-c:\Users\Administrator\Desktop\Cascade\data_samples\3_human_daily\2026031203.txt,,SampleData,UD,0,-1,0.0,processed,,,,,2.56
+c:\Users\Administrator\Desktop\github\Cascade\data_samples\3_human_daily\2026030702.txt,,SampleData,UD,0,-1,0.0,processed,,,0.37,0.48,1421.89
+c:\Users\Administrator\Desktop\github\Cascade\data_samples\3_human_daily\2026031203.txt,,SampleData,UD,0,-1,0.0,processed,,,,,2.56

@@ -17,9 +17,9 @@ The processing pipeline includes:
 │   ├── 4_train_5s/  # 5s-window segments for CNN training
 │   ├── 5_data_20s/ #20s-window seismic segments 
 │
-├── paper_cnn_model/                 #  CRITICAL: Contains the fine-tuned weights used in the paper
+├── paper_cnn_model/                 # Contains the fine-tuned weights used in the paper
 ├── train_model/                     # Output directory for trained CNN weights
-├── fine_tune_model/                 # Output directory for trained CNN weights
+├── fine_tune_model/                 # A demo fine-tuned model
 ├── pred_output/                     # Output directory for evaluation reports
 │
 ├── data_slide_20s.py          # Preprocessing: Raw -> 20s segments
@@ -32,13 +32,13 @@ The processing pipeline includes:
 ```
 
 **Pipeline Workflow**
-1. Data Slide
+1. Data Preprocessing
 - 20s Extraction (data_slide_20s.py): Scans 1_continuous data/ and extracts 20-second seismic clips. It dynamically calculates the true P-wave index relative to the sliding window and embeds this true location into the output .npy filename (e.g., _pidx_850.npy).
 - 5s Segmentation (slide_5s.py): Reads the 20s segments and generates 5-second training arrays stored in data_samples/4_train_5s/EQ/.
 
 2. Model Training & Fine-Tuning
 - Run train.py to train the CNN model.
-- The training process automatically reads segments from 4_train_5s/. A dynamic resampling strategy is employed during training to maintain a 1:1 ratio between positive and negative samples per batch, mitigating class imbalance. Output weights are saved into the train_model/ directory.
+- Trains the lightweight U-Net-style 1D CNN using segments from data_samples/4_train_5s/ with 1:1 dynamic batch resampling. Positive samples are split at the earthquake event level via GroupKFold, and negative samples are split chronologically with a physical buffer. Output weights are saved into the train_model/ directory.
 - finetune.py implements a domain adaptation strategy by freezing the bottom 60% of convolutional blocks to prevent catastrophic forgetting.
 
 3. Inference & Evaluation
@@ -67,7 +67,7 @@ To run the evaluation pipeline:
 
 
 **Data and Reproducibility Notice**
-1. Inference Reproduction: To reproduce the evaluation metrics and figures reported in the manuscript, simply execute prediction.py. This script defaults to using our final fine-tuned model weights (/paper_cnn_model/fold_0_v4.h5).
+1. Inference Reproduction: To reproduce the evaluation metrics and figures reported in the manuscript, simply execute prediction.py. This script defaults to using our final fine-tuned model weights (/paper_cnn_model/fold_0_v1.h5).
 2. Dataset Limitations: Due to file size constraints and ongoing research embargoes on the full-scale continuous seismic telemetry, this repository only includes a representative data subset (data_samples/).
 3. Methodological Reference: The provided processing and training scripts (data_slide_20s.py, train.py, finetune.py) are included to demonstrate the algorithmic workflow. Local training results generated using this limited subset are intended for methodological reference rather than production-level performance.
 

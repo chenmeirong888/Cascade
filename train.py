@@ -13,7 +13,7 @@ from tensorflow.keras.layers import (Input, Dense, Dropout, Conv1D, MaxPooling1D
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from sklearn.model_selection import KFold
 from tensorflow.keras.layers import SeparableConv1D, Activation
-
+from sklearn.model_selection import KFold
 
 plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['axes.unicode_minus'] = False
@@ -82,6 +82,16 @@ def load_one_file(fpath_in):
     
     return data, label_cls, label_pick
 
+def extract_event_id(fname):
+    parts = fname.split('_')
+    first = parts[0]
+    if len(first) >= 10:
+        return first[6:]
+    else:
+        if len(parts) >= 3:
+            return parts[2][2:]
+        return first
+        
 @tf.function
 def tf_augment(x, y_cls, y_pick):
     is_positive = tf.cast(y_cls[1], tf.bool)
@@ -289,7 +299,14 @@ def run_pipeline():
         print("Error: No positive samples found.")
         return
     
-    kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=42)
+    groups = []
+    for f in pos_files:
+        fname = os.path.basename(f)
+        event_id = extract_event_id(fname)
+        groups.append(event_id)
+    groups = np.array(groups)
+
+    gkf = GroupKFold(n_splits=N_FOLDS)
     results = []
     
     for fold, (tr_idx, val_idx) in enumerate(kf.split(pos_files)):
@@ -298,17 +315,15 @@ def run_pipeline():
         train_pos = pos_files[tr_idx]
         val_pos = pos_files[val_idx]
         
-        np.random.shuffle(neg_files)
+        neg_files = np.sort(neg_files)
 
-        desired_val_neg = len(val_pos) * 16
-        
-        if desired_val_neg >= len(neg_files):
-            val_neg_count = max(1, len(neg_files) // 5)
-        else:
-            val_neg_count = desired_val_neg
-            
+        val_neg_count = len(val_pos) * 17
         val_neg = neg_files[:val_neg_count]
-        train_neg = neg_files[val_neg_count:]
+        buffer_size = 10
+        train_neg = neg_files[val_neg_count + buffer_size : ]
+        
+        np.random.shuffle(val_neg)
+        np.random.shuffle(train_neg)
         
         train_ds = create_balanced_train_dataset(train_pos, train_neg, BATCH_SIZE)
         val_ds = create_natural_val_dataset(val_pos, val_neg, BATCH_SIZE)

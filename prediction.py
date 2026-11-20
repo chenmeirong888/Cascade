@@ -15,11 +15,11 @@ plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['axes.unicode_minus'] = False
 
 # Options: 'human_noise' | 'shaking_table' | 'continuous_eq'
-DATA_MODE = 'human_noise'  
+DATA_MODE = 'continuous_eq'  
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODEL_PATH = os.path.join(BASE_DIR, "paper_cnn_model", "fold_0_v4.h5")
+MODEL_PATH = os.path.join(BASE_DIR, "paper_cnn_model", "fold_0_v1.h5")
 
 INPUT_ROOT_MAP = {
     'continuous_eq': os.path.join(BASE_DIR, "data_samples", "1_continuous data"),
